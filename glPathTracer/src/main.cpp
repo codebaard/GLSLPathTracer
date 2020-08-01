@@ -29,6 +29,9 @@ int main(int argc, char* argv[]) {
     }
     catch (std::exception e) {
         jLog::Instance()->Error(std::string(e.what()));
+#if NDEBUG
+        system("pause");
+#endif
         return -1;
     }
 
@@ -37,6 +40,7 @@ int main(int argc, char* argv[]) {
     char buf[_MAX_PATH];
     cwd = _getcwd(buf, strlen(buf));
     cli->CWD = cwd;
+    jLog::Instance()->Log(INFO, "You shouldn't see me in a release build.");
 #endif
 
     try {
@@ -45,8 +49,13 @@ int main(int argc, char* argv[]) {
     catch (std::exception e) {
         jLog::Instance()->Error("Couldn't create openGL-Context. Reason:\n");
         jLog::Instance()->Error(std::string(e.what()));
+#if NDEBUG
+        system("pause");
+#endif
         return -1;
     }
+
+
 
 #pragma endregion
 
@@ -62,14 +71,14 @@ int main(int argc, char* argv[]) {
         CompShader->InitShader();
 
     }
-    catch (std::ifstream::failure e) {
+    catch (const std::exception& e) {
         jLog::Instance()->Error(std::string("Shader build Error. Message: ") + e.what());
+#if NDEBUG
+        system("pause");
+#endif
         return -1;
     }
-    catch (const std::exception& exc) {
-        jLog::Instance()->Error(exc.what());
-        return -1;
-    }
+
 #pragma endregion
 
 #pragma region Renderloop

@@ -11,7 +11,7 @@
         <Button Click="glPathTracerStart" Margin="80,-88,-239,58" Content="Start Engine"/>
         <Button Click="LoadOBJ" Margin="80,-328,-239,298" Content="Load OBJ-File"/>
         <Label FontWeight="Bold" Margin="80,-281,-170,249" Content="Loaded file:"/>
-        <Label x:Name="fLabel" Margin="80,-265,-170,233" Content="none"/>
+        <Label x:Name="fLabel" Margin="80,-265,-300,233" Content="none"/>
         <Label FontWeight="Bold" Margin="80,-223,-170,193" Content="Set resolution"/>
         <RadioButton Name="Btn1" Checked="Btn1_Checked" GroupName="resolution" Margin="80,-188,-423,163" Content="1280x720"/>
         <RadioButton Name="Btn2" Checked="Btn2_Checked" GroupName="resolution" Margin="80,-163,-423,138" Content="1024x576"/>

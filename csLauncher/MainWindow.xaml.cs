@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
 using System.Security.RightsManagement;
 
 namespace csLauncher
@@ -27,6 +28,7 @@ namespace csLauncher
         private glPathTracerLauncher _launcher;
         private bool _resolutionSelected = false;
         private bool _fileSelected = false;
+        //private System.Windows.Forms.Label fLabel;
 
         public MainWindow()
         {
@@ -40,8 +42,6 @@ namespace csLauncher
                 _launcher.LaunchRenderEngine();
             else
                 System.Windows.MessageBox.Show("Please select a file and set desired resolution.", "Launcher", MessageBoxButton.OK, MessageBoxImage.Error);
-            
-
         }
 
         private void LoadOBJ(object sender, RoutedEventArgs e)
@@ -64,7 +64,11 @@ namespace csLauncher
                     _launcher.fileNameOBJ = openFileDialog.SafeFileName;
                     _launcher.filePathOBJ = openFileDialog.FileName;
 
-                    //fileLabel.Content = fileNameOBJ;
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        this.fLabel.Content = openFileDialog.SafeFileName;
+                    }));
+                    Thread.Sleep(1);
                 }
             }
 
