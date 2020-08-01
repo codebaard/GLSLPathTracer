@@ -5,8 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:csLauncher"
         mc:Ignorable="d"
-        Title="openGL PathTracer Rendering Engine - bye Julius Neudekcer" Height="450" Width="800">
+        Title="openGL launcher" Height="394" Width="324">
     <Grid Margin="0,362,448,25">
-        <Button Click="glPathTracerStart" Margin="560,-25,-375,32">Start Engine</Button>
+        <Label FontWeight="Light"  Margin="171,-30,-310,5" Content="by Julius Neudecker 2020"/>
+        <Button Click="glPathTracerStart" Margin="80,-88,-239,58" Content="Start Engine"/>
+        <Button Click="LoadOBJ" Margin="80,-328,-239,298" Content="Load OBJ-File"/>
+        <Label FontWeight="Bold" Margin="80,-281,-170,249" Content="Loaded file:"/>
+        <Label x:Name="fLabel" Margin="80,-265,-170,233" Content="none"/>
+        <Label FontWeight="Bold" Margin="80,-223,-170,193" Content="Set resolution"/>
+        <RadioButton GroupName="resolution" Margin="80,-188,-423,163" Content="1280x720"/>
+        <RadioButton GroupName="resolution" IsChecked="True" Margin="80,-163,-423,138" Content="1024x576"/>
+        <RadioButton GroupName="resolution" RenderTransformOrigin="0.698,-2.5" Margin="80,-138,-155,113" Content="800x450"/>
+
     </Grid>
 </Window>

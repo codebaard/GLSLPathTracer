@@ -8,32 +8,45 @@
 
 #include <jLog.h>
 #include <Framebuffer.h>
+#include <cliHandler.h>
 
+#if _DEBUG
 #include <direct.h> //for _getcwd()
+#endif
 
-int main() {
+
+int main(int argc, char* argv[]) {
 #pragma region InitializeProgram
     jLog::Instance()->ConfigLogger(DATETIME24HWITHSECONDS, DEBUGGING, CONSOLE);
 
-    //get the current working directory to make loading all these files less cumbersome
+    //Objects
+    cliHandler* cli;
+    glfwHandler* Application;
+
+    //start program
+    try {
+        cli = new cliHandler(argc, argv);
+    }
+    catch (std::exception e) {
+        jLog::Instance()->Error(std::string(e.what()));
+        return -1;
+    }
+
+#if _DEBUG //path structure in debug is different
     char* cwd; //current path
     char buf[_MAX_PATH];
+    cwd = _getcwd(buf, strlen(buf));
+    cli->CWD = cwd;
+#endif
+
     try {
-        cwd = _getcwd(buf, strlen(buf));
-        jLog::Instance()->Log(INFO, cwd);
+        Application = new glfwHandler(cli->ScreenWidth, cli->ScreenHeight);
     }
-    catch (const std::exception& exc) {
-        jLog::Instance()->Error(std::string("Unknown Error: " + *exc.what()));
+    catch (std::exception e) {
+        jLog::Instance()->Error("Couldn't create openGL-Context. Reason:\n");
+        jLog::Instance()->Error(std::string(e.what()));
         return -1;
     }
-
-    glfwHandler* Application = new glfwHandler();
-    if (!Application->init() || !Application) {
-        jLog::Instance()->Error("Couldn't create openGL-Context. Aborting Application...");
-        return -1;
-    }
-
-
 
 #pragma endregion
 
@@ -43,8 +56,8 @@ int main() {
     Framebuffer* DisplayRoutine = new Framebuffer();
 
     try {
-        CompShader->AddShaderToPipeline(cwd, "\\shader\\compShader.comp", COMPUTE);
-        DisplayRoutine->SetShaderProgram(cwd, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
+        CompShader->AddShaderToPipeline(cli->CWD, "\\shader\\compShader.comp", COMPUTE);
+        DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
 
         CompShader->InitShader();
 
@@ -57,7 +70,6 @@ int main() {
         jLog::Instance()->Error(exc.what());
         return -1;
     }
-
 #pragma endregion
 
 

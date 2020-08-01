@@ -4,13 +4,16 @@ written by Julius Neudecker
 v0.1 22.07.2020
 v0.2 27.07.2020 - added openGL Debugging interface
 v0.2 28.07.2020 - streamlined the initialization-call
-
+v0.3 01.08.2020 - Improved exception handling
 */
 
 #include <glfwHandler.h>
 #include <glfwCallback.h>
 
-glfwHandler::glfwHandler() {
+glfwHandler::glfwHandler(int viewportWidth, int viewportHeight) {
+
+	_scrWidth = viewportWidth;
+	_scrHeight = viewportHeight;
 
 	try {
 		glfwInit();
@@ -20,11 +23,11 @@ glfwHandler::glfwHandler() {
 		glfwWindowHint(GLFW_SAMPLES, 4); //for MSAA -> no jagged edges
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true); //for debugging -> don't use for productive rendering.
 
-		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, WINDOW_TITLE, NULL, NULL);
+		window = glfwCreateWindow(_scrWidth, _scrHeight, WINDOW_TITLE, NULL, NULL);
 
 		if (!window) {
-			jLog::Instance()->glError(getErrorMsg());
-			throw 0;
+			std::string err = std::string(getErrorMsg());
+			throw (std::exception(err.c_str()));
 		}
 
 		// timing
@@ -34,46 +37,59 @@ glfwHandler::glfwHandler() {
 		//setup camera
 		SceneCamera = new fpvCam();
 		SceneCamera->camera = Camera(glm::vec3(0.0f, 3.0f, 10.0f));
-		SceneCamera->lastX = SCR_WIDTH / 2.0f;
-		SceneCamera->lastY = SCR_HEIGHT / 2.0f;
+		SceneCamera->lastX = _scrWidth / 2.0f;
+		SceneCamera->lastY = _scrHeight / 2.0f;
 		SceneCamera->firstMouse = true;
 
 		jLog::Instance()->Log(INFO, "GLFW Handler successfully instantiated.");
+
+		try {
+			_init();
+		}
+		catch (std::exception e) {
+			throw;
+		}
+
 	}
-	catch (int e) {
+	catch (std::exception e) {
 		jLog::Instance()->Error("Error creating glfwHandler.");
+		throw;
+
 	}
 }
 
-unsigned int glfwHandler::init() {
+void glfwHandler::_init() {
 
 	if (window == NULL) {
-		jLog::Instance()->Error("Failed to create GLFW Window");
 		glfwTerminate();
-		return 0;
+		throw (std::exception("Failed to create GLFW Window"));
 	}
 	jLog::Instance()->Log(INFO, "Window succesfully created.");
 
 	glfwMakeContextCurrent(window);
 	jLog::Instance()->Log(INFO, "Context succesfully created.");
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		jLog::Instance()->Error("Failed to init GLAD");
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {		
 		glfwTerminate();
-		return 0;
+		throw (std::exception("Failed to init GLAD"));
 	}
 	//for MSAA -> no jagged edges
 	glEnable(GL_MULTISAMPLE);
 
 	jLog::Instance()->Log(INFO, "openGL succesfully loaded. Creating Viewport...");
 
-	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+	glViewport(0, 0, _scrWidth, _scrHeight);
+	
+	try {
+#if _DEBUG
+		_configDebugContext();
+#endif
+		_configContext();
+	}
+	catch (std::exception e) {
+		throw;
+	}
 
-	// enable this for openGL debugging. Disable for productive use, because performance!
-	_configDebugContext();
-	_configContext();
-
-	return 1;
 }
 
 void glfwHandler::_configDebugContext() {
@@ -90,10 +106,9 @@ void glfwHandler::_configDebugContext() {
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
 		jLog::Instance()->Log(INFO, "Configuring GLFW Debug Context successful.");
-
 	}
 	else {
-		jLog::Instance()->Log(INFO, "Configuring GLFW Debug Context failed.");
+		throw (std::exception("Configuring GLFW Debug Context failed."));
 	}
 
 }

@@ -48,7 +48,7 @@ public:
 
 	//constructor and shader builds
 	Shader();
-	void AddShaderToPipeline(const char* cwd, const char* filename, ShaderType);
+	void AddShaderToPipeline(std::string cwd, const char* filename, ShaderType);
 	void InitShader();
 
 	//use/activate the shader
@@ -67,8 +67,8 @@ public:
 
 private:
 	ShaderProgram* _shaderList;
-	unsigned int BuildShader(ShaderType, const char*);
-	void cleanShaderList(); //unlink elements from list und delete structs
+	unsigned int _buildShader(ShaderType, const char*);
+	void _cleanShaderList(); //unlink elements from list und delete structs
 };
 
 class RenderShader : public Shader {

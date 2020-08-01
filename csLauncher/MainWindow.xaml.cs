@@ -15,8 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-
+using System.Windows.Forms;
+using System.IO;
+using System.Security.RightsManagement;
 
 namespace csLauncher
 {
@@ -25,6 +26,13 @@ namespace csLauncher
     /// </summary>
     public partial class MainWindow : Window
     {
+        string filePathOBJ = "";
+        string fileNameOBJ = "";
+
+        uint resWidth = 1024;
+        uint resHeight = 576;
+
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -37,5 +45,32 @@ namespace csLauncher
             Process.Start(startInfo);
         }
 
+        private void LoadOBJ(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement element = new FrameworkElement();
+            element.GetType().GetProperty("fLabel");
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "open OBJ File";
+                openFileDialog.Multiselect = false;
+                openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
+                openFileDialog.Filter = "obj files (*.obj)|*.obj";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    fileNameOBJ = openFileDialog.SafeFileName;
+                    filePathOBJ = openFileDialog.FileName;
+
+                    //fileLabel.Content = fileNameOBJ;
+                }
+            }
+
+        }
+
     }
+
 }

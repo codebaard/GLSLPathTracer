@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\callbacks.cpp" />
+    <ClCompile Include="src\cliHandler.cpp" />
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\glfwHandler.cpp" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="include\callbacks.h" />
     <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\cliHandler.h" />
     <ClInclude Include="include\Framebuffer.h" />
     <ClInclude Include="include\glfwCallback.h" />
     <ClInclude Include="include\glfwHandler.h" />

@@ -16,8 +16,8 @@ v0.2 01.08.2020 - optimized some function calls for easier use
 #include <jLog.h>
 #include <camera.h>
 
-#define SCR_WIDTH 512
-#define SCR_HEIGHT 512
+#define SCR_WIDTH 1280
+#define SCR_HEIGHT 720
 
 //new glad library
 #define USE_VERSION_MAJOR 4
@@ -34,8 +34,7 @@ struct fpvCam {
 
 class glfwHandler {
 public:
-	glfwHandler();
-	unsigned int init();
+	glfwHandler(int viewportWidth, int viewportHeight);	
 	void SetInputMode(int, int);
 
 	static fpvCam* giveCamera();
@@ -57,12 +56,16 @@ public:
 
 
 	//members
-	static fpvCam* SceneCamera;
+	static fpvCam* SceneCamera; 
 
 private:
 	GLFWwindow* window;
+	void _init();
 	void _configDebugContext();
 	void _configContext();
+
+	int _scrWidth;
+	int _scrHeight;
 
 	float _deltaTime;
 	float _lastFrame;

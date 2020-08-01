@@ -5,35 +5,42 @@ Shader::Shader() {
 	ID = 0;
 }
 
-void Shader::AddShaderToPipeline(const char* cwd, const char* filename, ShaderType type) {
-	ShaderProgram* newElement = new ShaderProgram();
-	ShaderProgram* itr = NULL;
-	ShaderProgram* prev = NULL;
+void Shader::AddShaderToPipeline(std::string cwd, const char* filename, ShaderType type) {
 
-	std::string path = std::string(cwd) + std::string(filename);
+	try{
+		ShaderProgram* newElement = new ShaderProgram();
+		ShaderProgram* itr = NULL;
+		ShaderProgram* prev = NULL;
 
-	newElement->filepath = path.c_str();
-	newElement->type = type;
-	newElement->ID = BuildShader(type, newElement->filepath.c_str());
-	newElement->nextElement = NULL;
+		std::string path = std::string(cwd) + std::string(filename);
 
-	//fill the single linked list
-	if (_shaderList == NULL) {
-		_shaderList = newElement;
-	}
-	else {
-		itr = _shaderList;
-		while (itr) {
-			prev = itr;
-			itr = itr->nextElement;
+		newElement->filepath = path.c_str();
+		newElement->type = type;
+		newElement->ID = _buildShader(type, newElement->filepath.c_str());
+		newElement->nextElement = NULL;
+
+		//fill the single linked list
+		if (_shaderList == NULL) {
+			_shaderList = newElement;
 		}
-		prev->nextElement = newElement;
+		else {
+			itr = _shaderList;
+			while (itr) {
+				prev = itr;
+				itr = itr->nextElement;
+			}
+			prev->nextElement = newElement;
+		}
+
+		jLog::Instance()->Log(INFO, "Shader added to Pipeline.");
+	}
+	catch (std::exception e) {
+		throw;
 	}
 
-	jLog::Instance()->Log(INFO, "Shader added to Pipeline.");
 }
 
-unsigned int Shader::BuildShader(ShaderType type, const char* filepath) {
+unsigned int Shader::_buildShader(ShaderType type, const char* filepath) {
 		
 	jLog::Instance()->Log(INFO, "Building: " + std::string(filepath));
 
@@ -55,8 +62,8 @@ unsigned int Shader::BuildShader(ShaderType type, const char* filepath) {
 		ShaderCode = ShaderStream.str();
 		jLog::Instance()->Log(INFO, "Shader file successfully read.");
 	}
-	catch (std::ifstream::failure e) {
-		throw (std::string("Shader file load error." + std::string(e.what())));
+	catch (std::exception e) {
+		throw;
 	}
 
 	code = ShaderCode.c_str();
@@ -114,12 +121,12 @@ void Shader::InitShader() {
 		throw(std::string(str));
 	}
 
-	cleanShaderList();
+	_cleanShaderList();
 
 	jLog::Instance()->Log(INFO, "Shader program successfully built.");
 }
 
-void Shader::cleanShaderList() {
+void Shader::_cleanShaderList() {
 	ShaderProgram* shader = _shaderList;
 	ShaderProgram* prev = NULL;
 

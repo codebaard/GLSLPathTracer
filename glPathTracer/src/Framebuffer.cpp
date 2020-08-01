@@ -111,7 +111,7 @@ void Framebuffer::_initQuadArray() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-void Framebuffer::SetShaderProgram(const char* cwd, const char* vertexShaderProgram, const char* fragmentShaderProgram) {
+void Framebuffer::SetShaderProgram(std::string cwd, const char* vertexShaderProgram, const char* fragmentShaderProgram) {
 	_renderer = new Shader();
 	_renderer->AddShaderToPipeline(cwd, vertexShaderProgram, VERTEX);
 	_renderer->AddShaderToPipeline(cwd, fragmentShaderProgram, FRAGMENT);

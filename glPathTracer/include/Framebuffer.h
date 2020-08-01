@@ -26,7 +26,7 @@ public:
 	void EnableRenderToTexture();
 	void DisableRenderToTexture(); //Disable after Rendering!
 	void ShowRenderedTexture();
-	void SetShaderProgram(const char* cwd, const char* vertexShader, const char* fragmentShader);
+	void SetShaderProgram(std::string cwd, const char* vertexShader, const char* fragmentShader);
 	
 	void InitImageTexture();
 	void ActivateImageTexture();
