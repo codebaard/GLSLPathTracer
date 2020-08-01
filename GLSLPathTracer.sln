@@ -5,22 +5,40 @@ VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glPathTracer", "glPathTracer\glPathTracer.vcxproj", "{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csLauncher", "csLauncher\csLauncher.csproj", "{587A3CFF-6843-44D2-94BA-2535DDF9834A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Debug|x64.ActiveCfg = Debug|x64
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Debug|x64.Build.0 = Debug|x64
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Debug|x86.ActiveCfg = Debug|Win32
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Debug|x86.Build.0 = Debug|Win32
+		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Release|Any CPU.ActiveCfg = Release|Win32
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Release|x64.ActiveCfg = Release|x64
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Release|x64.Build.0 = Release|x64
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Release|x86.ActiveCfg = Release|Win32
 		{54A8CC4D-F29F-4478-A0DD-7D87AF3E5D80}.Release|x86.Build.0 = Release|Win32
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Debug|x64.Build.0 = Debug|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Debug|x86.Build.0 = Debug|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Release|x64.ActiveCfg = Release|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Release|x64.Build.0 = Release|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Release|x86.ActiveCfg = Release|Any CPU
+		{587A3CFF-6843-44D2-94BA-2535DDF9834A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

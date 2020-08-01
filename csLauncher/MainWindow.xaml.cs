@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
+
 
 namespace csLauncher
 {
@@ -24,5 +29,13 @@ namespace csLauncher
         {
             InitializeComponent();
         }
+
+        private void glPathTracerStart(object sender, RoutedEventArgs e)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo("glPathTracer.exe");
+            startInfo.WindowStyle = ProcessWindowStyle.Normal;
+            Process.Start(startInfo);
+        }
+
     }
 }

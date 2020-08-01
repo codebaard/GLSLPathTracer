@@ -1,0 +1,2 @@
+D:/_FPROG/OpenGLPlayground/GLFW-First/include/glm/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+D:/_FPROG/OpenGLPlayground/GLFW-First/include/glm/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir

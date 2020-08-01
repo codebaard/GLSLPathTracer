@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:csLauncher"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="openGL PathTracer Rendering Engine - bye Julius Neudekcer" Height="450" Width="800">
+    <Grid Margin="0,362,448,25">
+        <Button Click="glPathTracerStart" Margin="560,-25,-375,32">Start Engine</Button>
     </Grid>
 </Window>
