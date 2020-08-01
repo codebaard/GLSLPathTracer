@@ -11,19 +11,19 @@ cliHandler::cliHandler(int argc, char* argv[])
 	}
 
 	std::list<std::string>::iterator it = params.begin();
+
 	CWD = *it++;
 
 	if (!_validateCLI(*it++)) {
 		throw (std::exception("Please use the launcher app provided to start the renderer."));
 	}
 
-
 	ScreenWidth = stoi(*it++);
 	ScreenHeight = stoi(*it++);
 	FilePathToModel = *it++;
+	ModelName = *it; //last element. Avoid pointing to undefined
 	
 	CWD = CWD.substr(0, CWD.find_last_of('\\'));
-
 }
 
 bool cliHandler::_validateCLI(std::string key) {

@@ -13,9 +13,9 @@
         <Label FontWeight="Bold" Margin="80,-281,-170,249" Content="Loaded file:"/>
         <Label x:Name="fLabel" Margin="80,-265,-170,233" Content="none"/>
         <Label FontWeight="Bold" Margin="80,-223,-170,193" Content="Set resolution"/>
-        <RadioButton GroupName="resolution" Margin="80,-188,-423,163" Content="1280x720"/>
-        <RadioButton GroupName="resolution" IsChecked="True" Margin="80,-163,-423,138" Content="1024x576"/>
-        <RadioButton GroupName="resolution" RenderTransformOrigin="0.698,-2.5" Margin="80,-138,-155,113" Content="800x450"/>
+        <RadioButton Name="Btn1" Checked="Btn1_Checked" GroupName="resolution" Margin="80,-188,-423,163" Content="1280x720"/>
+        <RadioButton Name="Btn2" Checked="Btn2_Checked" GroupName="resolution" Margin="80,-163,-423,138" Content="1024x576"/>
+        <RadioButton Name="Btn3" Checked="Btn3_Checked" GroupName="resolution" Margin="80,-138,-155,113" Content="800x450"/>
 
     </Grid>
 </Window>

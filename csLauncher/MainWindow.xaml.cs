@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
@@ -26,23 +24,24 @@ namespace csLauncher
     /// </summary>
     public partial class MainWindow : Window
     {
-        string filePathOBJ = "";
-        string fileNameOBJ = "";
+        private glPathTracerLauncher _launcher;
+        private bool _resolutionSelected = false;
+        private bool _fileSelected = false;
 
-        uint resWidth = 1024;
-        uint resHeight = 576;
-
-        
         public MainWindow()
         {
             InitializeComponent();
+            _launcher = new glPathTracerLauncher();
         }
 
         private void glPathTracerStart(object sender, RoutedEventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo("glPathTracer.exe");
-            startInfo.WindowStyle = ProcessWindowStyle.Normal;
-            Process.Start(startInfo);
+            if(_resolutionSelected && _fileSelected)
+                _launcher.LaunchRenderEngine();
+            else
+                System.Windows.MessageBox.Show("Please select a file and set desired resolution.", "Launcher", MessageBoxButton.OK, MessageBoxImage.Error);
+            
+
         }
 
         private void LoadOBJ(object sender, RoutedEventArgs e)
@@ -62,13 +61,38 @@ namespace csLauncher
                 if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     //Get the path of specified file
-                    fileNameOBJ = openFileDialog.SafeFileName;
-                    filePathOBJ = openFileDialog.FileName;
+                    _launcher.fileNameOBJ = openFileDialog.SafeFileName;
+                    _launcher.filePathOBJ = openFileDialog.FileName;
 
                     //fileLabel.Content = fileNameOBJ;
                 }
             }
 
+            _fileSelected = true;
+
+        }
+
+        private void Btn1_Checked(object sender, RoutedEventArgs e)
+        {
+
+            _launcher.resWidth = 1280;
+            _launcher.resHeight = 720;
+            _resolutionSelected = true;
+        }
+
+        private void Btn2_Checked(object sender, RoutedEventArgs e)
+        {
+            //IsChecked="True" 
+            _launcher.resWidth = 1024;
+            _launcher.resHeight = 576;
+            _resolutionSelected = true;
+        }
+
+        private void Btn3_Checked(object sender, RoutedEventArgs e)
+        {
+            _launcher.resWidth = 800;
+            _launcher.resHeight = 450;
+            _resolutionSelected = true;
         }
 
     }

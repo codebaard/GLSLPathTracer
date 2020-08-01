@@ -72,7 +72,6 @@ int main(int argc, char* argv[]) {
     }
 #pragma endregion
 
-
 #pragma region Renderloop
     jLog::Instance()->Log(INFO, "Starting Renderloop...");
     int frame = 0;

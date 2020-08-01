@@ -9,6 +9,9 @@ v0.1 - 01.08.2020
 #ifndef CLIHANDLER_H
 #define CLIHANDLER_H
 
+//some arbitrary key to prevent launching from the cli directly.
+#define APPKEY "6OWNObpW4iBrqNnA8r2L"
+
 #include <list>
 #include <string>
 
@@ -28,8 +31,7 @@ public:
 private:
 	bool _validateCLI(std::string key);
 
-	//some arbitrary key to prevent launching from the cli directly.
-	std::string _key = "6OWNObpW4iBrqNnA8r2L";
+	std::string _key = APPKEY;
 };
 
 
