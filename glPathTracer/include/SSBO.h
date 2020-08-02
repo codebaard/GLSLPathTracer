@@ -27,7 +27,6 @@ public:
 	~SSBO();
 
 	//pure virtual -> abstract!
-	virtual void MapBuffer() = 0;
 	virtual void FillBuffer() = 0;
 	virtual void LoadBuffer() = 0;
 
@@ -58,8 +57,6 @@ public:
 
 	GLuint bindingPoint;
 
-	void MapBuffer(Shader* shader); //no override bc of overloading
-	void MapBuffer() override {}
 	void FillBuffer() override;
 	void LoadBuffer() override;
 };

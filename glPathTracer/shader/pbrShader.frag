@@ -1,10 +1,6 @@
 #version 430 core
 out vec4 FragColor;
 
-layout(std430, binding = 0) buffer testSSBO{
-	uint position;
-	float root;
-} test;
 
 in VS_OUT {
     vec3 FragPos;
@@ -54,8 +50,6 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 
 void main()
 {    
-    test.position += 1;
-	test.root = sqrt(test.position);
 
     vec3 N = vec3(0.0);
     if(material.hasBumpMap){

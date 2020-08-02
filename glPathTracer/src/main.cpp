@@ -3,6 +3,7 @@
 #include <list>
 #include <Model.h>
 #include <SSBO.h>
+#include <Rendermesh.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -25,6 +26,7 @@ int main(int argc, char* argv[]) {
     cliHandler* cli;
     glfwHandler* Application;
     Model* SceneModel;
+    Rendermesh* Faces;
     PointLight* pl;
 
     //start program
@@ -61,8 +63,9 @@ int main(int argc, char* argv[]) {
 
     try {
         SceneModel = new Model(cli->FilePathToModel + cli->ModelName);
+        Faces = new Rendermesh();
         pl = new PointLight(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(100.0f, 100.0f, 100.0f));
-
+        Faces->ParseModelData(SceneModel);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(std::string("Model loading failed: ") + e.what());
@@ -76,8 +79,8 @@ int main(int argc, char* argv[]) {
 
 #pragma region Create OpenGL Objects
 
-    //ComputeShader* CompShader = new ComputeShader();
-    RenderShader* RasterPipeline = new RenderShader();
+    ComputeShader* CompShader = new ComputeShader();
+    //RenderShader* RasterPipeline = new RenderShader();
 
     Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
     Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
@@ -85,16 +88,16 @@ int main(int argc, char* argv[]) {
     testSSBO* ssbo = new testSSBO();
 
     try {
-        //CompShader->AddShaderToPipeline(cli->CWD, "\\shader\\compShader.comp", COMPUTE);
+        CompShader->AddShaderToPipeline(cli->CWD, "\\shader\\compShader", COMPUTE);
 
-        RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.vert", VERTEX);
-        RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.frag", FRAGMENT);
+        //RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.vert", VERTEX);
+        //RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.frag", FRAGMENT);
 
         DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
         PostProcessingPipeline->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\GammaHDR.frag");
 
-        //CompShader->InitShader();
-        RasterPipeline->InitShader();
+        CompShader->InitShader();
+        //RasterPipeline->InitShader();
     }
     catch (const std::exception& e) {
         jLog::Instance()->Error(std::string("Shader build Error. Message: ") + e.what());
@@ -106,7 +109,6 @@ int main(int argc, char* argv[]) {
 
     try {
         ssbo->FillBuffer();
-        ssbo->MapBuffer(RasterPipeline);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(e.what());
@@ -124,6 +126,8 @@ int main(int argc, char* argv[]) {
         Application->BeginRenderLoop();
 
         // #### Render code start here
+
+        //calculate PVM-Matrices
         glm::mat4 projection = glm::perspective(glm::radians(glfwHandler::giveCamera()->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
         glm::mat4 view = glfwHandler::giveCamera()->camera.GetViewMatrix();
 
@@ -132,21 +136,20 @@ int main(int argc, char* argv[]) {
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
         //prepare transformation matrices
-        RasterPipeline->use();
-        RasterPipeline->setMat4fv("projection", glm::value_ptr(projection));
-        RasterPipeline->setMat4fv("model", glm::value_ptr(model));
-        RasterPipeline->setMat4fv("view", glm::value_ptr(view));
+        //RasterPipeline->use();
+        //RasterPipeline->setMat4fv("projection", glm::value_ptr(projection));
+        //RasterPipeline->setMat4fv("model", glm::value_ptr(model));
+        //RasterPipeline->setMat4fv("view", glm::value_ptr(view));
 
-        RasterPipeline->setVec3fv("camPos", glm::value_ptr(glfwHandler::giveCamera()->camera.Position));
+        //RasterPipeline->setVec3fv("camPos", glm::value_ptr(glfwHandler::giveCamera()->camera.Position));
 
-        RasterPipeline->setLight(pl);
-
-        ssbo->LoadBuffer();
+        //RasterPipeline->setLight(pl);
 
         // ### Rendering + Post processing ###
         DisplayRoutine->EnableRenderToTexture(); //Draw call renders to "ImageRenderer-Buffer"          
 
-        SceneModel->Draw(*RasterPipeline); //draw call
+        //SceneModel->Draw(*RasterPipeline); //draw call
+        ssbo->LoadBuffer();
 
         DisplayRoutine->DisableRenderToTexture();
 
@@ -178,7 +181,7 @@ int main(int argc, char* argv[]) {
 
     //clean up
     //delete CompShader;
-    delete RasterPipeline;
+    //delete RasterPipeline;
     delete PostProcessingPipeline;
     delete DisplayRoutine;
     delete Application;

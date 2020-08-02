@@ -25,7 +25,7 @@ class Mesh {
 public:
 	//mesh data
 	std::vector<Vertex>	Vertices;
-	std::vector<unsigned int>	Indices;
+	std::vector<unsigned int> Indices;
 	mtlMaterial* Mat;
 	pbrMaterial* pbrMat;
 	std::list<Texture*> LoadedTextures;

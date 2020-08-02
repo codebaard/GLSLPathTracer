@@ -30,13 +30,16 @@ public:
 protected:
 	std::vector<Mesh> _meshes;
 
+
 	//unsigned int glTextureID = 0x84C0; //initialize with GL_TEXTURE0
 private:
 	friend class vertexSSBO; //allow to read SSBO data
+	friend class Rendermesh;
 	//model data
 
 	std::vector<Texture> _loadedTextures;
 	std::string _directory;
+	unsigned int _faceCount;
 
 	void _loadModel(std::string path);
 	void _processNode(aiNode* node, const aiScene* scene);

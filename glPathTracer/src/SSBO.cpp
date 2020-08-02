@@ -21,22 +21,9 @@ void vertexSSBO::FillBuffer(Model model) {
 }
 
 testSSBO::testSSBO() {
-	_bindingIndex = 0;
+	_bindingIndex = 3;
 	td.position = 0;
 	td.sqrt = 0;
-}
-
-void testSSBO::MapBuffer(Shader* shader) {
-
-	GLuint blockIndex = 0;
-	blockIndex = glGetProgramResourceIndex(shader->ID, GL_SHADER_STORAGE_BLOCK, "test");
-
-	if (blockIndex == GL_INVALID_INDEX) {
-		throw(std::exception("Shader Block index invalid!"));
-	}
-
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, blockIndex, bindingPoint);
-	glShaderStorageBlockBinding(shader->ID, blockIndex, bindingPoint);
 }
 
 void testSSBO::FillBuffer() {
@@ -46,7 +33,13 @@ void testSSBO::FillBuffer() {
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(td), &td, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
 
+	
 	gpuMem = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+	
+	if (gpuMem == NULL) {
+		throw(std::exception("GPU Memory couldnt be mapped!"));
+	}
+
 	memcpy(gpuMem, &td, sizeof(td));
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
