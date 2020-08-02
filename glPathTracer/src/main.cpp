@@ -29,6 +29,10 @@ int main(int argc, char* argv[]) {
     Rendermesh* Faces;
     PointLight* pl;
 
+    glm::mat4 projection = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 model = glm::mat4(1.0f);
+
     //start program
     try {
         cli = new cliHandler(argc, argv);
@@ -79,20 +83,24 @@ int main(int argc, char* argv[]) {
 
 #pragma region Create OpenGL Objects
 
-    ComputeShader* CompShader = new ComputeShader();
+    //ComputeShader* CompShader = new ComputeShader();
+    ComputeShader* TransformShader = new ComputeShader();
+    TransformShader->SetInternalArraySize(Faces->Facecount); //runtime change to GLSL-Code
 
-    Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
-    Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
+    //Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
+    //Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
 
-    testSSBO* ssbo = new testSSBO();
+    TransformSSBO* Transform = new TransformSSBO();
+    RendermeshSSBO* Rendermesh = new RendermeshSSBO();
 
     try {
-        CompShader->AddShaderToPipeline(cli->CWD, "\\shader\\compShader", COMPUTE);
+        TransformShader->AddShaderToPipeline(cli->CWD, "\\shader\\MVPVertexShader.comp", COMPUTE);
 
-        DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
-        PostProcessingPipeline->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\GammaHDR.frag");
+        //DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
+        //PostProcessingPipeline->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\GammaHDR.frag");
 
-        CompShader->InitShader();
+        //CompShader->InitShader();
+        TransformShader->InitShader();
     }
     catch (const std::exception& e) {
         jLog::Instance()->Error(std::string("Shader build Error. Message: ") + e.what());
@@ -103,7 +111,8 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        ssbo->FillBuffer();
+        Transform->FillBuffer(projection, view, model);
+        Rendermesh->FillBuffer(Faces);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(e.what());
@@ -121,23 +130,24 @@ int main(int argc, char* argv[]) {
         Application->BeginRenderLoop();
 
         // #### Render code start here
-
         //calculate PVM-Matrices
-        glm::mat4 projection = glm::perspective(glm::radians(glfwHandler::giveCamera()->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
-        glm::mat4 view = glfwHandler::giveCamera()->camera.GetViewMatrix();
-
-        glm::mat4 model = glm::mat4(1.0f); //place model in world origin
+        projection = glm::perspective(glm::radians(glfwHandler::giveCamera()->camera.Zoom), (float)cli->ScreenWidth / (float)cli->ScreenHeight, 0.1f, 1000.0f);
+        view = glfwHandler::giveCamera()->camera.GetViewMatrix();
+        model = glm::mat4(1.0f); //init everytime
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
         //prepare transformation matrices
+        Transform->RefreshBuffer(projection, view, model);
 
 
-        // ### Rendering + Post processing ###        
+        // ### Rendering + Post processing ###    
+        TransformShader->use();
+        TransformShader->DispatchCompute(Faces->Facecount, 1, 1); //update workitem definitions!
 
-        ssbo->LoadBuffer();
-
-        
+        Rendermesh->ReadBuffer();
+        std::string str = std::to_string(Rendermesh->Mesh->Faces->v1.x);
+        jLog::Instance()->Log(INFO, str);
 
         //CompShader->use();
         //CompShader->setFloat("roll", (float)frame++ * 0.01f);
@@ -145,11 +155,7 @@ int main(int argc, char* argv[]) {
         //DisplayRoutine->ActivateImageTexture(); //do this immediately before dispatching computeShader!
         //CompShader->DispatchCompute(512 / 16, 512 / 16, 1);
 
-        //DisplayRoutine->FetchTexture();
-        //DisplayRoutine->ShowRenderedTexture();
-
         // #### Rendering finished. 
-
         Application->ConcludeRenderLoop();
 
     }
@@ -159,11 +165,9 @@ int main(int argc, char* argv[]) {
     Application->Terminate();
 
     //clean up
-    delete PostProcessingPipeline;
-    delete DisplayRoutine;
+    //delete PostProcessingPipeline;
+    //delete DisplayRoutine;
     delete Application;
-
-    delete pl;
 
     return 0;
 #pragma endregion

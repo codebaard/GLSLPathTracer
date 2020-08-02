@@ -68,7 +68,11 @@ public:
 private:
 	ShaderProgram* _shaderList;
 	unsigned int _buildShader(ShaderType, const char*);
+	std::string _replace(std::string sourceCode); //for runtime changes to the code
 	void _cleanShaderList(); //unlink elements from list und delete structs
+
+protected:
+	unsigned int _arraySize = 0;
 };
 
 class RenderShader : public Shader {
@@ -93,12 +97,12 @@ public:
 	//void DispatchCompute(unsigned int ProblemSize, unsigned int WorkGroups, unsigned int WorkItems, unsigned int dim);
 	void DispatchCompute(unsigned int x, unsigned int y, unsigned int z);
 	//void SetWorkGroupSize();
+	void SetInternalArraySize(unsigned int i);
 
 	unsigned int ProblemSize;
 	unsigned int WorkGroups; //Global problem space divided into several workgroups
 	unsigned int WorkItems; //local in WorkGroups
 
-	//void createSSBO();
 };
 
 #endif

@@ -127,15 +127,6 @@
     <None Include="shader\fsQuadShader.vert">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shader\ptShader.comp">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="shader\DiffuseShader.frag">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="shader\MVPVertexShader.vert">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="shader\testShader.vert">
       <Filter>Shader</Filter>
     </None>
@@ -146,6 +137,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shader\pbrShader.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\MVPVertexShader.comp">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

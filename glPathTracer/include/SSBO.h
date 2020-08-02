@@ -18,7 +18,7 @@ v0.1 - 02.08.2020
 
 //binding points according to shader code!
 #define RENDERMESH_SSBO_BINDING_POINT 0
-#define TRANSFORM_SSBO_BINDING_POINT 1
+#define TRANSFORM_SSBO_BINDING_POINT 0
 
 struct Matrices {
 	glm::mat4 projection;
@@ -40,11 +40,17 @@ protected:
 
 class RendermeshSSBO : SSBO {
 public:
-	RendermeshSSBO() { _bindingIndex = 0;  }
+	RendermeshSSBO();
 
 	void FillBuffer(Rendermesh* rendermesh);
 	void BindBuffer();
 	void UnbindBuffer();
+	void ReadBuffer();
+
+	Rendermesh* Mesh;
+
+private: 
+
 };
 
 class TransformSSBO : SSBO {

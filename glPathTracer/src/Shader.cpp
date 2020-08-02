@@ -66,8 +66,6 @@ unsigned int Shader::_buildShader(ShaderType type, const char* filepath) {
 		throw;
 	}
 
-	code = ShaderCode.c_str();
-
 	switch (type) {
 	case VERTEX:
 		ShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -77,8 +75,12 @@ unsigned int Shader::_buildShader(ShaderType type, const char* filepath) {
 		break;
 	case COMPUTE:
 		ShaderID = glCreateShader(GL_COMPUTE_SHADER);
+		if (_arraySize != 0)
+			ShaderCode = _replace(ShaderCode);
 		break;
 	}
+
+	code = ShaderCode.c_str();
 
 	glShaderSource(ShaderID, 1, &code, NULL);
 	glCompileShader(ShaderID);
@@ -293,6 +295,24 @@ void ComputeShader::DispatchCompute(unsigned int x, unsigned int y, unsigned int
 	//}
 
 	glDispatchCompute(x, y, z);
+}
+
+void ComputeShader::SetInternalArraySize(unsigned int i) {
+	_arraySize = i;
+}
+
+std::string Shader::_replace(std::string sourceCode) {
+
+	std::string repl = std::to_string(_arraySize);
+
+	for (int i = 0; i < sourceCode.length(); i++) {
+		if (sourceCode[i] == '$') {
+			sourceCode.replace(i, 1, repl);
+		}
+
+	}
+
+	return sourceCode;
 }
 
 void Shader::setBool(const std::string& name, bool value) const {

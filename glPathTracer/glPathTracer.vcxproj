@@ -201,14 +201,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\compShader.comp" />
-    <None Include="shader\DiffuseShader.frag" />
     <None Include="shader\fsQuadShader.frag" />
     <None Include="shader\fsQuadShader.vert" />
     <None Include="shader\GammaHDR.frag" />
-    <None Include="shader\MVPVertexShader.vert" />
+    <None Include="shader\MVPVertexShader.comp" />
     <None Include="shader\pbrShader.frag" />
     <None Include="shader\pbrShader.vert" />
-    <None Include="shader\ptShader.comp" />
     <None Include="shader\testShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

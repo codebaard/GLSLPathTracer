@@ -7,6 +7,11 @@ void SSBO::_initBuffer() {
 
 }
 
+RendermeshSSBO::RendermeshSSBO() {
+	_bindingIndex = RENDERMESH_SSBO_BINDING_POINT;
+	Mesh = (Rendermesh*)malloc(sizeof(Rendermesh));
+}
+
 void RendermeshSSBO::FillBuffer(Rendermesh* rendermesh) {
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
@@ -35,6 +40,22 @@ void RendermeshSSBO::UnbindBuffer() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
+void RendermeshSSBO::ReadBuffer() {
+
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT); //essentially: wait until ready.
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
+	gpuMem = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+
+	if (gpuMem == NULL)
+		jLog::Instance()->Error("Could not map shader log into clients memory space for reading.");
+	else
+		memcpy(Mesh, gpuMem, sizeof(Rendermesh));
+
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
 void TransformSSBO::FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 
 	_packData(projection, view, model);
@@ -56,6 +77,8 @@ void TransformSSBO::FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 m
 }
 
 void TransformSSBO::RefreshBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
+
+	_packData(projection, view, model);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
