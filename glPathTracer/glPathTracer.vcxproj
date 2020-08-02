@@ -126,6 +126,7 @@
       <AdditionalIncludeDirectories>D:\_FPROG\OpenGLPlayground\GLSLPathTracer\glPathTracer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UseMSVC>false</UseMSVC>
       <CCppSupport>Cpp17Support</CCppSupport>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,6 +134,9 @@
       <AdditionalDependencies>glfw3.lib;assimp-vc142-mtd.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>D:\_FPROG\OpenGLPlayground\GLSLPathTracer\glPathTracer\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -193,9 +197,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\compShader.comp" />
+    <None Include="shader\DiffuseShader.frag" />
     <None Include="shader\fsQuadShader.frag" />
     <None Include="shader\fsQuadShader.vert" />
-    <None Include="shader\ImageTextureShader.frag" />
+    <None Include="shader\MVPVertexShader.vert" />
     <None Include="shader\ptShader.comp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

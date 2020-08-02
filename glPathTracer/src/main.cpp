@@ -1,6 +1,7 @@
 #include <glfwHandler.h> //does all the glfw Work
 #include <shader.h>
 #include <list>
+#include <Model.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +23,7 @@ int main(int argc, char* argv[]) {
     //Objects
     cliHandler* cli;
     glfwHandler* Application;
+    Model* SceneModel;
 
     //start program
     try {
@@ -40,7 +42,6 @@ int main(int argc, char* argv[]) {
     char buf[_MAX_PATH];
     cwd = _getcwd(buf, strlen(buf));
     cli->CWD = cwd;
-    jLog::Instance()->Log(INFO, "You shouldn't see me in a release build.");
 #endif
 
     try {
@@ -55,21 +56,35 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-
+    try {
+        SceneModel = new Model(cli->FilePathToModel + cli->ModelName);
+    }
+    catch (std::exception e) {
+        jLog::Instance()->Error(std::string("Model loading failed: ") + e.what());
+#if NDEBUG
+        system("pause");
+#endif
+        return -1;
+    }
 
 #pragma endregion
 
 #pragma region Create OpenGL Objects
 
     ComputeShader* CompShader = new ComputeShader();
+    RenderShader* RasterPipeline = new RenderShader();
     Framebuffer* DisplayRoutine = new Framebuffer();
 
     try {
         CompShader->AddShaderToPipeline(cli->CWD, "\\shader\\compShader.comp", COMPUTE);
+
+        RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\MVPVertexShader.vert", VERTEX);
+        RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\DiffuseShader.frag", FRAGMENT);
+
         DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
 
         CompShader->InitShader();
-
+        RasterPipeline->InitShader();
     }
     catch (const std::exception& e) {
         jLog::Instance()->Error(std::string("Shader build Error. Message: ") + e.what());

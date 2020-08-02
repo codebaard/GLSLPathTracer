@@ -25,7 +25,7 @@ v0.3 31.07.2020 - Added PBR material and texture loading
 class Model {
 public:
 	Model() {}
-	Model(const char* path) { _loadModel(path); }
+	Model(std::string path) { _loadModel(path); }
 	void Draw(RenderShader& shader);
 
 	//unsigned int glTextureID = 0x84C0; //initialize with GL_TEXTURE0

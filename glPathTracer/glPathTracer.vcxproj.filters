@@ -115,10 +115,13 @@
     <None Include="shader\fsQuadShader.vert">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shader\ImageTextureShader.frag">
+    <None Include="shader\ptShader.comp">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shader\ptShader.comp">
+    <None Include="shader\DiffuseShader.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\MVPVertexShader.vert">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
