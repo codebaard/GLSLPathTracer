@@ -17,7 +17,6 @@ v0.3 31.07.2020 - Added PBR material and texture loading
 #include <Mesh.h>
 #include <Shader.h>
 #include <jLog.h>
-//#include <Material.h>
 
 #include <string>
 #include <vector>
@@ -28,10 +27,14 @@ public:
 	Model(std::string path) { _loadModel(path); }
 	void Draw(RenderShader& shader);
 
+protected:
+	std::vector<Mesh> _meshes;
+
 	//unsigned int glTextureID = 0x84C0; //initialize with GL_TEXTURE0
 private:
+	friend class vertexSSBO; //allow to read SSBO data
 	//model data
-	std::vector<Mesh> _meshes;
+
 	std::vector<Texture> _loadedTextures;
 	std::string _directory;
 

@@ -21,7 +21,7 @@ v0.2 31.07.2020 - Added Functionality for fetching Compute Shader Buffer
 class Framebuffer {
 public:
 	//set default values since the framebuffer is normally intended to render texture output.
-	Framebuffer(unsigned int bufferType = GL_FRAMEBUFFER, unsigned int attachmentUnit = GL_COLOR_ATTACHMENT0);
+	Framebuffer(unsigned int width, unsigned int height, unsigned int bufferType = GL_FRAMEBUFFER, unsigned int attachmentUnit = GL_COLOR_ATTACHMENT0);
 	
 	void EnableRenderToTexture();
 	void DisableRenderToTexture(); //Disable after Rendering!
@@ -44,6 +44,8 @@ private:
 	unsigned int _attachmentUnit;
 	unsigned int _targetTextureID;
 	unsigned int _computeImageTextureID;
+	unsigned int _width;
+	unsigned int _height;
 	Shader* _renderer;
 
 	//for rendering fullscreen quad

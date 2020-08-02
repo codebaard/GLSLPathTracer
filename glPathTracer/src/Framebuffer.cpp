@@ -1,9 +1,11 @@
 #include <Framebuffer.h>
 
-Framebuffer::Framebuffer(unsigned int bufferType, unsigned int attachmentUnit) {
+Framebuffer::Framebuffer(unsigned int width, unsigned int height, unsigned int bufferType, unsigned int attachmentUnit) {
 
 	_bufferType = bufferType;
 	_attachmentUnit = attachmentUnit;
+	_width = width;
+	_height = height;
 
 	glGenFramebuffers(1, &_FBO);
 
@@ -69,7 +71,7 @@ void Framebuffer::_attachTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, RENDERBUFFER_SIZE_WIDTH, RENDERBUFFER_SIZE_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, _width, _height, 0, GL_RGBA, GL_FLOAT, NULL);
 
 	//memory allocated. Unbind for predictable behavior.
 	glBindTexture(GL_TEXTURE_2D, 0); //unbdind from internal texture unit (default: GL_TEXTURE0)
@@ -79,7 +81,7 @@ void Framebuffer::_attachTexture() {
 	//creating depth and stencil buffer
 	glGenRenderbuffers(1, &_RBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, _RBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, RENDERBUFFER_SIZE_WIDTH, RENDERBUFFER_SIZE_HEIGHT);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, _width, _height);
 	
 	//memory allocated. Unbind for predictable behavior.
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -95,7 +97,6 @@ void Framebuffer::_attachTexture() {
 }
 
 void Framebuffer::ActivateImageTexture() {
-	//glBindImageTexture(0, _targetTextureID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindImageTexture(0, _targetTextureID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 }
 

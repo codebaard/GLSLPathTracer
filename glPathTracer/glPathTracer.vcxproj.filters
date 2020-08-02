@@ -60,6 +60,9 @@
     <ClCompile Include="src\cliHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SSBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\callbacks.h">
@@ -104,6 +107,9 @@
     <ClInclude Include="include\cliHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\SSBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\compShader.comp">
@@ -122,6 +128,18 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shader\MVPVertexShader.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\testShader.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\GammaHDR.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\pbrShader.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shader\pbrShader.vert">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

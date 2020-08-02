@@ -58,6 +58,12 @@ glfwHandler::glfwHandler(int viewportWidth, int viewportHeight) {
 	}
 }
 
+void glfwHandler::FPVCam(bool yes = false) {
+	if (yes)
+		SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED); //lock cursor to screen
+	
+}
+
 void glfwHandler::_init() {
 
 	if (window == NULL) {
@@ -178,8 +184,6 @@ void glfwHandler::_configContext() {
 
 	jLog::Instance()->Log(INFO, "Configuring application context...");
 
-
-	//SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED); //lock cursor to screen
 	SetFramebufferSizeCallback(framebuffer_size_callback);
 	SetCursorPosCallback(mouse_callback);
 	SetScrollCallback(scroll_callback);
@@ -190,6 +194,8 @@ void glfwHandler::_configContext() {
 
 	jLog::Instance()->Log(INFO, "OpenGL application context successfully configured.");
 }
+
+
 
 void glfwHandler::BeginRenderLoop() {
 

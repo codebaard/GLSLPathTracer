@@ -53,6 +53,7 @@ public:
 	void PollEvents();
 	void Terminate();
 	static std::string getErrorMsg();
+	void FPVCam(bool yes);
 
 
 	//members
