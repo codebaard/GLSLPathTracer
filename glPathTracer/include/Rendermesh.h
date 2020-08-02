@@ -36,13 +36,14 @@ struct Triangle {
 
 class Rendermesh {
 public:
-	Rendermesh() { _facecount = 0; Faces = NULL; }
+	Rendermesh() { Facecount = 0; Faces = NULL; }
 	Triangle* Faces;
 
 	void ParseModelData(Model* model);
+	__int64 Facecount;
 
 private:
-	__int64 _facecount;
+
 };
 
 #endif

@@ -35,7 +35,7 @@ void Rendermesh::ParseModelData(Model* model) {
 			itr->F0 = mesh.pbrMat->F0;
 
 			itr++; //next element
-			_facecount++;
+			Facecount++;
 			
 		}
 

@@ -1,5 +1,5 @@
 /*
-SSBO (Shader Storage Buffer)-Class
+SSBO (Shader Storage Buffer Object)-Class
 One Instance is a Handle for each GLSL SSBO and provides the necessary Interface for
 loading and storing all data within the scope of this application.
 written by Julius Neudecker
@@ -14,22 +14,21 @@ v0.1 - 02.08.2020
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 
-#include <Model.h> //contains all necessary data
+#include <Rendermesh.h>
 
-struct testInt {
-	unsigned int position;
-	float sqrt;
+//binding points according to shader code!
+#define RENDERMESH_SSBO_BINDING_POINT 0
+#define TRANSFORM_SSBO_BINDING_POINT 1
+
+struct Matrices {
+	glm::mat4 projection;
+	glm::mat4 view;
+	glm::mat4 model;
 };
 
 class SSBO {
 public:
 	SSBO() { _initBuffer(); }
-	~SSBO();
-
-	//pure virtual -> abstract!
-	virtual void FillBuffer() = 0;
-	virtual void LoadBuffer() = 0;
-
 
 protected:
 	unsigned int _SSBO; //handle
@@ -37,28 +36,28 @@ protected:
 	GLvoid* gpuMem;
 
 	void _initBuffer();
-
 };
 
-class vertexSSBO : SSBO {
+class RendermeshSSBO : SSBO {
 public:
-	vertexSSBO() { _bindingIndex = 0;  }
-	~vertexSSBO();
+	RendermeshSSBO() { _bindingIndex = 0;  }
 
-	void FillBuffer(Model model);
+	void FillBuffer(Rendermesh* rendermesh);
+	void BindBuffer();
+	void UnbindBuffer();
+};
+
+class TransformSSBO : SSBO {
+public:
+	TransformSSBO() { mat = NULL; }
+
+	void FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+	void RefreshBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+
 private:
+	void _packData(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+	Matrices* mat;
 
-};
-
-class testSSBO : SSBO {
-public:
-	testSSBO();
-	testInt td;
-
-	GLuint bindingPoint;
-
-	void FillBuffer() override;
-	void LoadBuffer() override;
 };
 
 

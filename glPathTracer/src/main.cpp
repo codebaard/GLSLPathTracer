@@ -63,8 +63,8 @@ int main(int argc, char* argv[]) {
 
     try {
         SceneModel = new Model(cli->FilePathToModel + cli->ModelName);
+
         Faces = new Rendermesh();
-        pl = new PointLight(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(100.0f, 100.0f, 100.0f));
         Faces->ParseModelData(SceneModel);
     }
     catch (std::exception e) {
@@ -80,7 +80,6 @@ int main(int argc, char* argv[]) {
 #pragma region Create OpenGL Objects
 
     ComputeShader* CompShader = new ComputeShader();
-    //RenderShader* RasterPipeline = new RenderShader();
 
     Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
     Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
@@ -90,14 +89,10 @@ int main(int argc, char* argv[]) {
     try {
         CompShader->AddShaderToPipeline(cli->CWD, "\\shader\\compShader", COMPUTE);
 
-        //RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.vert", VERTEX);
-        //RasterPipeline->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.frag", FRAGMENT);
-
         DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
         PostProcessingPipeline->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\GammaHDR.frag");
 
         CompShader->InitShader();
-        //RasterPipeline->InitShader();
     }
     catch (const std::exception& e) {
         jLog::Instance()->Error(std::string("Shader build Error. Message: ") + e.what());
@@ -136,28 +131,12 @@ int main(int argc, char* argv[]) {
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
         //prepare transformation matrices
-        //RasterPipeline->use();
-        //RasterPipeline->setMat4fv("projection", glm::value_ptr(projection));
-        //RasterPipeline->setMat4fv("model", glm::value_ptr(model));
-        //RasterPipeline->setMat4fv("view", glm::value_ptr(view));
 
-        //RasterPipeline->setVec3fv("camPos", glm::value_ptr(glfwHandler::giveCamera()->camera.Position));
 
-        //RasterPipeline->setLight(pl);
+        // ### Rendering + Post processing ###        
 
-        // ### Rendering + Post processing ###
-        DisplayRoutine->EnableRenderToTexture(); //Draw call renders to "ImageRenderer-Buffer"          
-
-        //SceneModel->Draw(*RasterPipeline); //draw call
         ssbo->LoadBuffer();
 
-        DisplayRoutine->DisableRenderToTexture();
-
-        ////Post-Processing Pipeline for HDR LinearSpace -> sRGB Gamma
-        PostProcessingPipeline->EnableRenderToTexture(); //Draw call renders to "PostProcessing-Buffer"
-        DisplayRoutine->ShowRenderedTexture(); // draw call
-        PostProcessingPipeline->DisableRenderToTexture();
-        PostProcessingPipeline->ShowRenderedTexture();
         
 
         //CompShader->use();
@@ -180,8 +159,6 @@ int main(int argc, char* argv[]) {
     Application->Terminate();
 
     //clean up
-    //delete CompShader;
-    //delete RasterPipeline;
     delete PostProcessingPipeline;
     delete DisplayRoutine;
     delete Application;
