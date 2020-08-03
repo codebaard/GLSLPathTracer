@@ -48,6 +48,8 @@ Mesh Model::_processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<unsigned int> indices;
 	mtlMaterial* material = new mtlMaterial();
 
+	_faceCount += mesh->mNumFaces;
+
 	//vertices
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;

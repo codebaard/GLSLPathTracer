@@ -23,7 +23,7 @@ v0.3 31.07.2020 - Added PBR material and texture loading
 
 class Model {
 public:
-	Model() {}
+	Model() { _faceCount = 0; }
 	Model(std::string path) { _loadModel(path); }
 	void Draw(RenderShader& shader);
 

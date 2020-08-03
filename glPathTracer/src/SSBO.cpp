@@ -12,6 +12,10 @@ RendermeshSSBO::RendermeshSSBO() {
 	Mesh = (Rendermesh*)malloc(sizeof(Rendermesh));
 }
 
+TransformSSBO::TransformSSBO() {
+	mat = new Matrices();
+}
+
 void RendermeshSSBO::FillBuffer(Rendermesh* rendermesh) {
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
@@ -93,6 +97,15 @@ void TransformSSBO::RefreshBuffer(glm::mat4 projection, glm::mat4 view, glm::mat
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+void RendermeshSSBO::MapBuffer() {
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
+
+	GLuint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
+
+	//continue here...
 }
 
 void TransformSSBO::_packData(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {

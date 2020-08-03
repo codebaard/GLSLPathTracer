@@ -120,7 +120,7 @@ void Shader::InitShader() {
 	if (!success) {
 		glGetProgramInfoLog(ID, INFO_LOG_SIZE, NULL, infoLog);
 		std::string str = std::string("Shader Programm Compilation failed. InfoLog:\n") + std::string(infoLog);
-		throw(std::string(str));
+		throw(std::exception(str.c_str()));
 	}
 
 	_cleanShaderList();

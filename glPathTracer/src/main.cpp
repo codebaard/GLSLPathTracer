@@ -27,7 +27,6 @@ int main(int argc, char* argv[]) {
     glfwHandler* Application;
     Model* SceneModel;
     Rendermesh* Faces;
-    PointLight* pl;
 
     glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
@@ -140,10 +139,9 @@ int main(int argc, char* argv[]) {
         //prepare transformation matrices
         Transform->RefreshBuffer(projection, view, model);
 
-
         // ### Rendering + Post processing ###    
         TransformShader->use();
-        TransformShader->DispatchCompute(Faces->Facecount, 1, 1); //update workitem definitions!
+        TransformShader->DispatchCompute(Faces->Facecount, 1, 1);
 
         Rendermesh->ReadBuffer();
         std::string str = std::to_string(Rendermesh->Mesh->Faces->v1.x);

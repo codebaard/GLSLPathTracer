@@ -46,6 +46,7 @@ public:
 	void BindBuffer();
 	void UnbindBuffer();
 	void ReadBuffer();
+	void MapBuffer();
 
 	Rendermesh* Mesh;
 
@@ -55,7 +56,7 @@ private:
 
 class TransformSSBO : SSBO {
 public:
-	TransformSSBO() { mat = NULL; }
+	TransformSSBO();
 
 	void FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
 	void RefreshBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
