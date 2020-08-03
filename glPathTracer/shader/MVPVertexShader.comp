@@ -2,8 +2,11 @@
 
 struct Triangle {
     vec3 v1;
+    float pad1;
     vec3 v2;
+    float pad2;
     vec3 v3;
+    float pad3;
 
     vec3 Indices;
 
@@ -24,14 +27,16 @@ struct Triangle {
     float Tr;
 };
 
-layout(std140, binding = 0) buffer TransformSSBO {
+//layout(std430, binding = 0) buffer TransformSSBO {
+layout(std430) buffer TransformSSBO {
     mat4 projection;
     mat4 view;
     mat4 model;
 } Transform;
 
-layout(std140, binding = 12) buffer RendermeshSSBO {
-    Triangle triangles[$];
+//layout(std430, binding = 1) buffer RendermeshSSBO {
+layout(std430) buffer RendermeshSSBO {
+    Triangle triangles[];
 } Rendermesh;
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;

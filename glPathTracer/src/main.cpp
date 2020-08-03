@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     cliHandler* cli;
     glfwHandler* Application;
     Model* SceneModel;
-    Rendermesh* Faces;
+    Rendermesh* myRendermesh;
 
     glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
@@ -64,11 +64,17 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+#pragma endregion
+
+
+#pragma region Load Scene Data
+
+
     try {
         SceneModel = new Model(cli->FilePathToModel + cli->ModelName);
 
-        Faces = new Rendermesh();
-        Faces->ParseModelData(SceneModel);
+        myRendermesh = new Rendermesh();
+        myRendermesh->ParseModelData(SceneModel);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(std::string("Model loading failed: ") + e.what());
@@ -84,7 +90,7 @@ int main(int argc, char* argv[]) {
 
     //ComputeShader* CompShader = new ComputeShader();
     ComputeShader* TransformShader = new ComputeShader();
-    TransformShader->SetInternalArraySize(Faces->Facecount); //runtime change to GLSL-Code
+    //TransformShader->SetInternalArraySize(myRendermesh->Facecount); //runtime change to GLSL-Code
 
     //Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
     //Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
@@ -110,8 +116,11 @@ int main(int argc, char* argv[]) {
     }
 
     try {
+        TransformBuffer->MapBufferToAdressSpace(TransformShader->ID);
+        RendermeshBuffer->MapBufferToAdressSpace(TransformShader->ID);
+
         TransformBuffer->FillBuffer(projection, view, model);
-        RendermeshBuffer->FillBuffer(Faces);
+        RendermeshBuffer->FillBuffer(myRendermesh);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(e.what());
@@ -146,18 +155,19 @@ int main(int argc, char* argv[]) {
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
-        //prepare transformation matrices
+        //store PVM-Matrices in GPU Memory
         TransformBuffer->FillBuffer(projection, view, model);
+        RendermeshBuffer->FillBuffer(myRendermesh);
 
         // ### Rendering + Post processing ###    
         TransformShader->use();
-        TransformShader->DispatchCompute(Faces->Facecount, 1, 1);
+        TransformShader->DispatchCompute(myRendermesh->Facecount, 1, 1);
+        //TransformShader->DispatchCompute(1, 1, 1);
 
-        RendermeshBuffer->ReadBuffer(Faces);
-        //TransformBuffer->LoadBuffer();
+        RendermeshBuffer->ReadBuffer();
+        TransformBuffer->ReadBuffer();
 
-        //std::string str = std::to_string(RendermeshBuffer->Mesh->Faces->Edge1.b);
-        //jLog::Instance()->Log(INFO, str);
+        jLog::Instance()->Log(INFO, RendermeshBuffer->DebugGiveVector());
 
         //CompShader->use();
         //CompShader->setFloat("roll", (float)frame++ * 0.01f);
@@ -177,7 +187,13 @@ int main(int argc, char* argv[]) {
     //clean up
     //delete PostProcessingPipeline;
     //delete DisplayRoutine;
+    delete cli;
     delete Application;
+    delete SceneModel;
+    delete myRendermesh;
+    delete TransformShader;
+    delete TransformBuffer;
+    delete RendermeshBuffer;
 
     return 0;
 #pragma endregion

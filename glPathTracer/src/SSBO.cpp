@@ -7,47 +7,46 @@ void SSBO::_initBuffer() {
 }
 
 RendermeshSSBO::RendermeshSSBO() {
-	_bindingIndex = RENDERMESH_SSBO_BINDING_POINT;
-	Mesh = (Rendermesh*)malloc(sizeof(Rendermesh));
+	//_bindingIndex = RENDERMESH_SSBO_BINDING_POINT;
+	_mesh = (Rendermesh*)malloc(sizeof(Rendermesh));
+	_bindingName = "RendermeshSSBO";
 }
 
 TransformSSBO::TransformSSBO() {
-	_bindingIndex = TRANSFORM_SSBO_BINDING_POINT;
-	mat = new Matrices();
+	//_bindingIndex = TRANSFORM_SSBO_BINDING_POINT;
+	_mat = new Matrices();
+	_bindingName = "TransformSSBO";
 }
 
 void RendermeshSSBO::FillBuffer(Rendermesh* rendermesh) {
 
-	this->Mesh = rendermesh;
+	this->_mesh = rendermesh;
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Triangle)*rendermesh->Facecount, rendermesh->Faces, GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Triangle)*rendermesh->Facecount, rendermesh->Faces, GL_DYNAMIC_COPY);
 	
-	//gpuMem = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
-	gpuMem = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Triangle) * rendermesh->Facecount, GL_MAP_WRITE_BIT);
-	
-	if (gpuMem == NULL) {
+	//gpuMem = (Triangle*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Triangle), GL_MAP_READ_BIT);
+	gpuMem = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+
+	if (gpuMem == NULL)
 		throw(std::exception("GPU Memory couldnt be mapped!"));
-	}
 
-	memcpy(gpuMem, Mesh->Faces, sizeof(Triangle) * Mesh->Facecount);
+	memcpy(gpuMem, _mesh->Faces, sizeof(Triangle) * _mesh->Facecount);
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void RendermeshSSBO::BindBuffer() {
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
-}
+//GLuint ssbo = 0;
+//glGenBuffers(1, &ssbo);
+//glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(shader_data), &shader_data, GL_DYNAMIC_COPY);
 
-void RendermeshSSBO::UnbindBuffer() {
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
+//GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+//memcpy(p, &shader_data, sizeof(shader_data))
+//glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 
-void RendermeshSSBO::ReadBuffer(Rendermesh* rendermesh) {
+void RendermeshSSBO::ReadBuffer() {
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT); //essentially: wait until ready.
 
@@ -55,59 +54,83 @@ void RendermeshSSBO::ReadBuffer(Rendermesh* rendermesh) {
 	gpuMem = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
 
 	if (gpuMem == NULL)
-		jLog::Instance()->Error("Could not map shader log into clients memory space for reading.");
-	else
-		memcpy(Mesh, gpuMem, sizeof(Triangle)*rendermesh->Facecount);
+		throw(std::exception("GPU Memory couldnt be mapped!"));
+
+	memcpy(_mesh->Faces, gpuMem, sizeof(Triangle));
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-//void RendermeshSSBO::MapBuffer(Rendermesh* rendermesh) {
-//	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
-//	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
-//
-//	GLuint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
-//
-//	Triangle* Faces = (Triangle*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, rendermesh->Facecount * sizeof(Triangle), bufMask);
-//
-//	Faces = rendermesh->Faces;
-//
-//	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-//}
+void TransformSSBO::MapBufferToAdressSpace(GLuint programID) {
+
+	_bindingIndex = glGetProgramResourceIndex(programID, GL_SHADER_STORAGE_BLOCK, _bindingName);
+
+	//GLuint ssbo_binding_point_index = 2;
+	//glShaderStorageBlockBinding(programID, _bindingIndex, TRANSFORM_SSBO_BINDING_POINT);
+
+
+	//glShaderStorageBlockBinding(programID, _bindingIndex, 80);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
+}
+
+void RendermeshSSBO::MapBufferToAdressSpace(GLuint programID) {
+
+	_bindingIndex = glGetProgramResourceIndex(programID, GL_SHADER_STORAGE_BLOCK, _bindingName);
+
+	//GLuint ssbo_binding_point_index = 2;
+	//glShaderStorageBlockBinding(programID, _bindingIndex, RENDERMESH_SSBO_BINDING_POINT);
+
+
+	//glShaderStorageBlockBinding(programID, _bindingIndex, 80);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
+}
+
+std::string RendermeshSSBO::DebugGiveVector() {
+	glm::vec3 temp1 = _mesh->Faces->Edge1;
+	glm::vec3 temp2 = _mesh->Faces->Edge2;
+
+	std::string out = "\n";
+	out += glm::to_string(temp1);
+	out += "\n";
+	out += glm::to_string(temp2);
+
+	return out;
+}
+
+
 
 void TransformSSBO::FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 
 	_packData(projection, view, model);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Matrices), mat, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Matrices), _mat, GL_DYNAMIC_DRAW);
 
-	gpuMem = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Matrices), GL_MAP_WRITE_BIT);
+	gpuMem = (Matrices*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Matrices), GL_MAP_WRITE_BIT);
 
-	if (gpuMem == NULL) {
+	if (gpuMem == NULL)
 		throw(std::exception("GPU Memory couldnt be mapped!"));
-	}
 
-	memcpy(gpuMem, mat, sizeof(Matrices));
+	memcpy(gpuMem, _mat, sizeof(Matrices));
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void TransformSSBO::LoadBuffer() {
+void TransformSSBO::ReadBuffer() {
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT); //essentially: wait until ready.
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, _SSBO);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, _bindingIndex, _SSBO);
 	gpuMem = glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, sizeof(Matrices), GL_MAP_READ_BIT);
 
 	if (gpuMem == NULL)
 		jLog::Instance()->Error("Could not map shader log into client's memory space for reading.");
 	else
-		memcpy(&mat, (Matrices*)gpuMem, sizeof(mat));
+		memcpy(_mat, gpuMem, sizeof(_mat));
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -115,9 +138,15 @@ void TransformSSBO::LoadBuffer() {
 
 
 void TransformSSBO::_packData(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
-	mat->projection = projection;
-	mat->view = view;
-	mat->model = model;
+	_mat->projection = projection;
+	_mat->view = view;
+	_mat->model = model;
+}
+
+std::string TransformSSBO::DebugGiveVector() {
+	glm::vec3 temp = _mat->view[0];
+	return glm::to_string(temp);
+
 }
 
 //void RendermeshSSBO::LoadBuffer() {

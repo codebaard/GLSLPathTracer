@@ -20,7 +20,7 @@ v0.1 - 02.08.2020
 
 //binding points according to shader code!
 #define TRANSFORM_SSBO_BINDING_POINT 0
-#define RENDERMESH_SSBO_BINDING_POINT 12
+#define RENDERMESH_SSBO_BINDING_POINT 1
 
 struct Matrices {
 	glm::mat4 projection;
@@ -31,10 +31,13 @@ struct Matrices {
 class SSBO {
 public:
 	SSBO() { _initBuffer(); }
+	virtual void MapBufferToAdressSpace(GLuint programID) = 0;
 
 protected:
-	unsigned int _SSBO; //handle
+	GLuint _SSBO; //handle
 	unsigned int _bindingIndex; //see layout specifier in shadercode
+	const char* _bindingName;
+
 	GLvoid* gpuMem;
 
 	void _initBuffer();
@@ -45,14 +48,14 @@ public:
 	RendermeshSSBO();
 
 	void FillBuffer(Rendermesh* rendermesh);
-	void BindBuffer();
-	void UnbindBuffer();
-	void ReadBuffer(Rendermesh* rendermesh);
-	void MapBuffer(Rendermesh* rendermesh);
+	void ReadBuffer();
 
-	Rendermesh* Mesh;
+	void MapBufferToAdressSpace(GLuint programID) override;
+
+	std::string DebugGiveVector();
 
 private: 
+	Rendermesh* _mesh;
 
 };
 
@@ -61,12 +64,15 @@ public:
 	TransformSSBO();
 
 	void FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
-	void LoadBuffer();
+	void ReadBuffer();
+
+	void MapBufferToAdressSpace(GLuint programID) override;
+
+	std::string DebugGiveVector();
 
 private:
+	Matrices* _mat;
 	void _packData(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
-	Matrices* mat;
-
 };
 
 

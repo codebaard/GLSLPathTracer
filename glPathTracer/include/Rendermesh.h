@@ -12,7 +12,7 @@ v0.1 - 02.08.2020
 
 struct Triangle {
 	glm::vec3 v1;
-	glm::float32 pad0 = 0;
+	glm::float32 pad0;
 
 	glm::vec3 v2;
 	glm::float32 pad1;
@@ -45,17 +45,9 @@ struct Triangle {
 	glm::float32 pad10;
 
 	glm::float32 Metalness;
-	glm::float32 pad11[3];
-
 	glm::float32 Roughness;
-	glm::float32 pad12[3];
-
 	glm::float32 IOR;
-	glm::float32 pad13[3];
-
 	glm::float32 Tr;
-	glm::float32 pad14[3];
-
 };
 
 class Rendermesh {

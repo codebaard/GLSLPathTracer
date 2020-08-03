@@ -10,10 +10,12 @@ void Rendermesh::ParseModelData(Model* model) {
 	__int64 offset = 0;
 	__int64 i; //mesh can be big!
 	unsigned int maxN = model->_meshes.size();
+	//unsigned int maxN = 1;
 
 	for (int n = 0; n < maxN; n++) {
 
 		for (i = 0; i < model->_meshes[n].Vertices.size(); i+=3) { 
+		//for (i = 0; i < 1; i+=3) { 
 
 			if (n == 0 && i == 0)
 				itr->v1 = model->_meshes[n].Vertices[i].Position;			
@@ -41,6 +43,7 @@ void Rendermesh::ParseModelData(Model* model) {
 			itr->F0 = model->_meshes[n].pbrMat->F0;
 
 			//create predictable behaviour for the padding.
+			itr->pad0 = 0;
 			itr->pad1 = 0;
 			itr->pad2 = 0;
 			itr->pad3 = 0;
@@ -51,18 +54,6 @@ void Rendermesh::ParseModelData(Model* model) {
 			itr->pad8 = 0;
 			itr->pad9 = 0;
 			itr->pad10 = 0;
-			itr->pad11[0] = 0;
-			itr->pad11[1] = 0;
-			itr->pad11[2] = 0;
-			itr->pad12[0] = 0;
-			itr->pad12[0] = 0;
-			itr->pad12[0] = 0;
-			itr->pad13[0] = 0;
-			itr->pad13[0] = 0;
-			itr->pad13[0] = 0;
-			itr->pad14[0] = 0;
-			itr->pad14[0] = 0;
-			itr->pad14[0] = 0;
 
 			Facecount++;			
 		}

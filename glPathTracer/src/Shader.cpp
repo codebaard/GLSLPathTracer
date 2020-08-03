@@ -75,9 +75,9 @@ unsigned int Shader::_buildShader(ShaderType type, const char* filepath) {
 		break;
 	case COMPUTE:
 		ShaderID = glCreateShader(GL_COMPUTE_SHADER);
-		if (_arraySize != 0)
-			ShaderCode = _replace(ShaderCode);
-		break;
+		//if (_arraySize != 0)
+		//	ShaderCode = _replace(ShaderCode);
+		//break;
 	}
 
 	code = ShaderCode.c_str();
