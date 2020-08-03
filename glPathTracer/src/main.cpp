@@ -25,9 +25,12 @@ int main(int argc, char* argv[]) {
     //Objects
     cliHandler* cli;
     glfwHandler* Application;
-    Model* SceneModel;
-    Rendermesh* myRendermesh;
 
+    //scene objects
+    Model* SceneModel;
+    PointLight* pl = new PointLight(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(100.0f, 100.0f, 100.0f));
+
+    //transform matrices
     glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 model = glm::mat4(1.0f);
@@ -71,10 +74,12 @@ int main(int argc, char* argv[]) {
 
 
     try {
+#if _DEBUG
         SceneModel = new Model(cli->FilePathToModel + cli->ModelName);
+#elif NDEBUG
+        SceneModel = new Model(cli->FilePathToModel);
+#endif
 
-        myRendermesh = new Rendermesh();
-        myRendermesh->ParseModelData(SceneModel);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(std::string("Model loading failed: ") + e.what());
@@ -88,24 +93,19 @@ int main(int argc, char* argv[]) {
 
 #pragma region Create OpenGL Objects
 
-    //ComputeShader* CompShader = new ComputeShader();
-    ComputeShader* TransformShader = new ComputeShader();
-    //TransformShader->SetInternalArraySize(myRendermesh->Facecount); //runtime change to GLSL-Code
+    RenderShader* Renderer = new RenderShader();
 
-    //Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
-    //Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
-
-    TransformSSBO* TransformBuffer = new TransformSSBO();
-    RendermeshSSBO* RendermeshBuffer = new RendermeshSSBO();
+    Framebuffer* IntrermediateTexture = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
+    Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
 
     try {
-        TransformShader->AddShaderToPipeline(cli->CWD, "\\shader\\MVPVertexShader.comp", COMPUTE);
+        Renderer->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.vert", VERTEX);
+        Renderer->AddShaderToPipeline(cli->CWD, "\\shader\\pbrShader.frag", FRAGMENT);
 
-        //DisplayRoutine->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
-        //PostProcessingPipeline->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\GammaHDR.frag");
+        IntrermediateTexture->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\fsQuadShader.frag");
+        PostProcessingPipeline->SetShaderProgram(cli->CWD, "\\shader\\fsQuadShader.vert", "\\shader\\GammaHDR.frag");
 
-        //CompShader->InitShader();
-        TransformShader->InitShader();
+        Renderer->InitShader();
     }
     catch (const std::exception& e) {
         jLog::Instance()->Error(std::string("Shader build Error. Message: ") + e.what());
@@ -114,28 +114,6 @@ int main(int argc, char* argv[]) {
 #endif
         return -1;
     }
-
-    try {
-        TransformBuffer->MapBufferToAdressSpace(TransformShader->ID);
-        RendermeshBuffer->MapBufferToAdressSpace(TransformShader->ID);
-
-        TransformBuffer->FillBuffer(projection, view, model);
-        RendermeshBuffer->FillBuffer(myRendermesh);
-    }
-    catch (std::exception e) {
-        jLog::Instance()->Error(e.what());
-    }
-
-    jLog::Instance()->Log(INFO, "GLM Sizes : float, vec3, mat4");
-    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(glm::float32))));
-    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(glm::vec3))));
-    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(glm::mat4))));
-
-    jLog::Instance()->Log(INFO, "Struct Triangle");
-    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(Triangle))));
-
-    jLog::Instance()->Log(INFO, "Struct Matrices");
-    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(Matrices))));
 
 #pragma endregion
 
@@ -155,25 +133,26 @@ int main(int argc, char* argv[]) {
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
-        //store PVM-Matrices in GPU Memory
-        TransformBuffer->FillBuffer(projection, view, model);
-        RendermeshBuffer->FillBuffer(myRendermesh);
+        Renderer->use();
+        Renderer->setMat4fv("projection", glm::value_ptr(projection));
+        Renderer->setMat4fv("model", glm::value_ptr(model));
+        Renderer->setMat4fv("view", glm::value_ptr(view));
 
-        // ### Rendering + Post processing ###    
-        TransformShader->use();
-        TransformShader->DispatchCompute(myRendermesh->Facecount, 1, 1);
-        //TransformShader->DispatchCompute(1, 1, 1);
+        Renderer->setVec3fv("camPos", glm::value_ptr(glfwHandler::giveCamera()->camera.Position));
+        Renderer->setLight(pl);
 
-        RendermeshBuffer->ReadBuffer();
-        TransformBuffer->ReadBuffer();
+        // ### Rendering + Post processing ###
+        IntrermediateTexture->EnableRenderToTexture(); //Draw call renders to "IntrermediateTexture-Buffer"          
 
-        jLog::Instance()->Log(INFO, RendermeshBuffer->DebugGiveVector());
+        SceneModel->Draw(*Renderer); //draw call
 
-        //CompShader->use();
-        //CompShader->setFloat("roll", (float)frame++ * 0.01f);
-        //
-        //DisplayRoutine->ActivateImageTexture(); //do this immediately before dispatching computeShader!
-        //CompShader->DispatchCompute(512 / 16, 512 / 16, 1);
+        IntrermediateTexture->DisableRenderToTexture();
+
+        //Post-Processing Pipeline for HDR LinearSpace -> sRGB Gamma
+        PostProcessingPipeline->EnableRenderToTexture(); //Draw call renders to "PostProcessing-Buffer"
+        IntrermediateTexture->ShowRenderedTexture(); // draw call
+        PostProcessingPipeline->DisableRenderToTexture();
+        PostProcessingPipeline->ShowRenderedTexture();
 
         // #### Rendering finished. 
         Application->ConcludeRenderLoop();
@@ -185,15 +164,13 @@ int main(int argc, char* argv[]) {
     Application->Terminate();
 
     //clean up
-    //delete PostProcessingPipeline;
-    //delete DisplayRoutine;
+    delete PostProcessingPipeline;
+    delete IntrermediateTexture;
     delete cli;
     delete Application;
     delete SceneModel;
-    delete myRendermesh;
-    delete TransformShader;
-    delete TransformBuffer;
-    delete RendermeshBuffer;
+    delete pl;
+    delete Renderer;
 
     return 0;
 #pragma endregion

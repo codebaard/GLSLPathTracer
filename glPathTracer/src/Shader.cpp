@@ -265,35 +265,8 @@ void RenderShader::setMaterial(pbrMaterial* mat) {
 	setFloat("material.Transparency", mat->Tr);
 }
 
-//void ComputeShader::DispatchCompute(unsigned int problemSize, unsigned int workGroups, unsigned int workItems, unsigned int dim) {
 void ComputeShader::DispatchCompute(unsigned int x, unsigned int y, unsigned int z) {
 		
-	//ProblemSize = problemSize;
-	//WorkGroups = workGroups;
-	//WorkItems = workItems;
-
-	//unsigned int x= 0, y=0, z=0;
-
-	//switch (dim) {
-	//case 1:
-	//	x = problemSize;
-	//	y = 0;
-	//	z = 0;
-	//	break;
-	//case 2:
-
-
-	//	break;
-	//case 3:
-
-	//	break;
-	//default:
-	//	x = problemSize;
-	//	y = 0;
-	//	z = 0;
-	//	break;
-	//}
-
 	glDispatchCompute(x, y, z);
 }
 
