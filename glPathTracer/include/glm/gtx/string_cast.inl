@@ -481,6 +481,7 @@ namespace detail
 		}
 	};
 
+
 }//namespace detail
 
 template<class matType>

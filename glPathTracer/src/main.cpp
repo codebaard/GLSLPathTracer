@@ -89,8 +89,8 @@ int main(int argc, char* argv[]) {
     //Framebuffer* DisplayRoutine = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
     //Framebuffer* PostProcessingPipeline = new Framebuffer(cli->ScreenWidth, cli->ScreenHeight);
 
-    TransformSSBO* Transform = new TransformSSBO();
-    RendermeshSSBO* Rendermesh = new RendermeshSSBO();
+    TransformSSBO* TransformBuffer = new TransformSSBO();
+    RendermeshSSBO* RendermeshBuffer = new RendermeshSSBO();
 
     try {
         TransformShader->AddShaderToPipeline(cli->CWD, "\\shader\\MVPVertexShader.comp", COMPUTE);
@@ -110,13 +110,23 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        Transform->FillBuffer(projection, view, model);
-        Rendermesh->FillBuffer(Faces);
+        TransformBuffer->FillBuffer(projection, view, model);
+        RendermeshBuffer->FillBuffer(Faces);
     }
     catch (std::exception e) {
         jLog::Instance()->Error(e.what());
     }
 
+    jLog::Instance()->Log(INFO, "GLM Sizes : float, vec3, mat4");
+    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(glm::float32))));
+    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(glm::vec3))));
+    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(glm::mat4))));
+
+    jLog::Instance()->Log(INFO, "Struct Triangle");
+    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(Triangle))));
+
+    jLog::Instance()->Log(INFO, "Struct Matrices");
+    jLog::Instance()->Log(INFO, std::string(std::to_string(sizeof(Matrices))));
 
 #pragma endregion
 
@@ -137,15 +147,17 @@ int main(int argc, char* argv[]) {
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
         //prepare transformation matrices
-        Transform->RefreshBuffer(projection, view, model);
+        TransformBuffer->FillBuffer(projection, view, model);
 
         // ### Rendering + Post processing ###    
         TransformShader->use();
         TransformShader->DispatchCompute(Faces->Facecount, 1, 1);
 
-        Rendermesh->ReadBuffer();
-        std::string str = std::to_string(Rendermesh->Mesh->Faces->v1.x);
-        jLog::Instance()->Log(INFO, str);
+        RendermeshBuffer->ReadBuffer(Faces);
+        //TransformBuffer->LoadBuffer();
+
+        //std::string str = std::to_string(RendermeshBuffer->Mesh->Faces->Edge1.b);
+        //jLog::Instance()->Log(INFO, str);
 
         //CompShader->use();
         //CompShader->setFloat("roll", (float)frame++ * 0.01f);

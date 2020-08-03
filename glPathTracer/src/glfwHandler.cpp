@@ -195,8 +195,6 @@ void glfwHandler::_configContext() {
 	jLog::Instance()->Log(INFO, "OpenGL application context successfully configured.");
 }
 
-
-
 void glfwHandler::BeginRenderLoop() {
 
 	//temp variables

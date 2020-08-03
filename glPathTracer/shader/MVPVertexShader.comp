@@ -16,21 +16,21 @@ struct Triangle {
 
     vec3 Albedo;
 
+    vec3 F0;
+
     float Metalness;
     float Roughness;
     float IOR;
     float Tr;
-
-    vec3 F0;
 };
 
-layout(std430, binding = 0) buffer TransformSSBO {
+layout(std140, binding = 0) buffer TransformSSBO {
     mat4 projection;
     mat4 view;
     mat4 model;
 } Transform;
 
-layout(std430, binding = 12) buffer RendermeshSSBO {
+layout(std140, binding = 12) buffer RendermeshSSBO {
     Triangle triangles[$];
 } Rendermesh;
 
@@ -40,25 +40,22 @@ void main()
 {
     uint index = gl_GlobalInvocationID.x;
 
-    for ( uint i = 0; i < $ ; i++){
+    vec4 tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].v1, 1.0);
+    Rendermesh.triangles[index].v1 = tmp.xyz;
+    tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].v2, 1.0);
+    Rendermesh.triangles[index].v2 = tmp.xyz;
+    tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].v3, 1.0);
+    Rendermesh.triangles[index].v3 = tmp.xyz;
 
-        vec4 tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].v1, 1.0);
-        Rendermesh.triangles[index].v1 = tmp.xyz;
-        tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].v2, 1.0);
-        Rendermesh.triangles[index].v2 = tmp.xyz;
-        tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].v3, 1.0);
-        Rendermesh.triangles[index].v3 = tmp.xyz;
+    tmp =Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].n1, 1.0);
+    Rendermesh.triangles[index].n1 = tmp.xyz;
+    tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].n2, 1.0);
+    Rendermesh.triangles[index].n2 = tmp.xyz;
+    tmp =Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].n3, 1.0);
+    Rendermesh.triangles[index].n3 = tmp.xyz;
 
-        tmp =Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].n1, 1.0);
-        Rendermesh.triangles[index].n1 = tmp.xyz;
-        tmp = Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].n2, 1.0);
-        Rendermesh.triangles[index].n2 = tmp.xyz;
-        tmp =Transform.projection * Transform.view * Transform.model * vec4(Rendermesh.triangles[index].n3, 1.0);
-        Rendermesh.triangles[index].n3 = tmp.xyz;
-
-        Rendermesh.triangles[index].Edge1 = Rendermesh.triangles[index].v2 - Rendermesh.triangles[index].v1;
-        Rendermesh.triangles[index].Edge2 = Rendermesh.triangles[index].v3 - Rendermesh.triangles[index].v1;
-    }
+    Rendermesh.triangles[index].Edge1 = Rendermesh.triangles[index].v2 - Rendermesh.triangles[index].v1;
+    Rendermesh.triangles[index].Edge2 = Rendermesh.triangles[index].v3 - Rendermesh.triangles[index].v1;
     //gl_Position = projection * view * model * vec4(aPos, 1.0);
 
 } 

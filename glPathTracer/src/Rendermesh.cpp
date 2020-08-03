@@ -40,6 +40,30 @@ void Rendermesh::ParseModelData(Model* model) {
 			itr->Tr = model->_meshes[n].pbrMat->Tr;
 			itr->F0 = model->_meshes[n].pbrMat->F0;
 
+			//create predictable behaviour for the padding.
+			itr->pad1 = 0;
+			itr->pad2 = 0;
+			itr->pad3 = 0;
+			itr->pad4 = 0;
+			itr->pad5 = 0;
+			itr->pad6 = 0;
+			itr->pad7 = 0;
+			itr->pad8 = 0;
+			itr->pad9 = 0;
+			itr->pad10 = 0;
+			itr->pad11[0] = 0;
+			itr->pad11[1] = 0;
+			itr->pad11[2] = 0;
+			itr->pad12[0] = 0;
+			itr->pad12[0] = 0;
+			itr->pad12[0] = 0;
+			itr->pad13[0] = 0;
+			itr->pad13[0] = 0;
+			itr->pad13[0] = 0;
+			itr->pad14[0] = 0;
+			itr->pad14[0] = 0;
+			itr->pad14[0] = 0;
+
 			Facecount++;			
 		}
 		offset += i;

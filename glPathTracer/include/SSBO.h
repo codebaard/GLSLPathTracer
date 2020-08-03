@@ -12,13 +12,15 @@ v0.1 - 02.08.2020
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #include <glad/glad.h>
 
 #include <Rendermesh.h>
 
 //binding points according to shader code!
-#define RENDERMESH_SSBO_BINDING_POINT 0
 #define TRANSFORM_SSBO_BINDING_POINT 0
+#define RENDERMESH_SSBO_BINDING_POINT 12
 
 struct Matrices {
 	glm::mat4 projection;
@@ -45,8 +47,8 @@ public:
 	void FillBuffer(Rendermesh* rendermesh);
 	void BindBuffer();
 	void UnbindBuffer();
-	void ReadBuffer();
-	void MapBuffer();
+	void ReadBuffer(Rendermesh* rendermesh);
+	void MapBuffer(Rendermesh* rendermesh);
 
 	Rendermesh* Mesh;
 
@@ -59,7 +61,7 @@ public:
 	TransformSSBO();
 
 	void FillBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
-	void RefreshBuffer(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+	void LoadBuffer();
 
 private:
 	void _packData(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
